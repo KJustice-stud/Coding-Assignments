@@ -6,16 +6,19 @@
 #read equipment from a file, write updates & errors to file
 
 ##---->>>> Use a try/except clause to import the JSON module
-
-
+try:
+    import json
+except ImportError:
+    print("Couldn't import JSON module")
+    pass
 
 ##---->>>> Create file constants for the file names; file constants can be reused
 ##         There are 2 files to read this program: equip_r.txt and equip_s.txt
 ##         There are 2 files to write in this program: updated.txt and errors.txt
-      
-
-
-
+R_FILENAME = 'equip_r.txt'
+S_FILENAME = 'equip_s.txt'
+ERR_FILENAME = 'errors.txt'
+UPD_FILENAME = 'updated.txt'  
 
 #prompt constants
 UPDATE = "\nWhich device would you like to update "
@@ -58,24 +61,15 @@ def getValidIP(invalidIPCount, invalidIPAddresses):
                 #don't need to return invalidIPAddresses list - it's an object
         
 def main():
-
-    ##---->>>> open files here
-
-
-
-    
-    #dictionaries
     ##---->>>> read the routers and addresses into the router dictionary
-
-    routers = {}
-
+    with open(R_FILENAME) as r:
+        routers = json.load(r)
 
     ##---->>>> read the switches and addresses into the switches dictionary
+    with open(S_FILENAME) as s:
+        switches = json.load(s)
 
-    switches = {}
-
-
-    #the updated dictionary holds the device name and new ip address
+    #the updated dictionary holds the device name and new ip address      
     updated = {}
 
     #list of bad addresses entered by the user
@@ -129,18 +123,27 @@ def main():
     print("\nSummary:")
     print()
     print("Number of devices updated:", devicesUpdatedCount)
-
+  
     ##---->>>> write the updated equipment dictionary to a file
-
-    
-    print("Updated equipment written to file 'updated.txt'")
-    print()
-    print("\nNumber of invalid addresses attempted:", invalidIPCount)
+    try:
+        with open(UPD_FILENAME, 'w') as upd:
+            json.dump(updated, upd)
+            #print(updated)  
+    except TypeError:
+        print("No devices were updated")
+        pass
+        
+    #print("Updated equipment written to file 'updated.txt'")
+    #print()
+    print("Number of invalid addresses attempted:", invalidIPCount)
 
     ##---->>>> write the list of invalid addresses to a file
-    
-
-    print("List of invalid addresses written to file 'errors.txt'")
+    try:    
+        with open(ERR_FILENAME, 'w') as err:
+            json.dump(invalidIPAddresses, err)
+            #print(invalidIPAddresses)
+    except TypeError:
+        print("No errors were written")
 
 #top-level scope check
 if __name__ == "__main__":
